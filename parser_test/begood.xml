@@ -1,0 +1,43 @@
+
+première version
+<head>
+	<indi>
+		<name>John /Begood/</name>
+		<sex>M</sex>
+		<fams>@F1@<fams/> ????
+	</indi>
+</head>
+
+
+deuxième version
+<gedcom>
+	<head>
+	</head>
+		<indi xml:id ="i1" name="john" sname="Beegood">
+			<sex>M</sex>
+			<fams xml:id="f1"/>
+		</indi>
+
+		<indi xml:id ="i2" name="ada" sname="Beegood">
+			<fams xml:id="f1"/>
+		</indi>	
+
+		<indi xml:id ="i3" name="fred" sname="Beegood">
+			<famc xml:id="f1"/>
+		</indi>
+
+		<indi xml:id ="i4" name="lea" sname="Beegood">
+			<sex>F</sex>
+			<famc xml:id="f1"/>
+		</indi>
+
+		<fam>
+			<husb id="i1" />
+			<wife id="i2" />
+			<chil id="i3" />
+			<chil id="i4" />
+		</fam>
+</gedcom>
+
+
+
