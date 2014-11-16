@@ -9,35 +9,75 @@ première version
 </head>
 
 
-deuxième version
+deuxième version (pas bon car on peux porté plusieurs nom)
 <gedcom>
 	<head>
 	</head>
-		<indi xml:id ="i1" name="john" sname="Beegood">
+		<indi xml:idi ="i1" name="john" sname="Beegood">
 			<sex>M</sex>
-			<fams xml:id="f1"/>
+			<fams xml:idf="f1"/>
 		</indi>
 
-		<indi xml:id ="i2" name="ada" sname="Beegood">
-			<fams xml:id="f1"/>
+		<indi xml:idi ="i2" name="ada" sname="Beegood">
+			<fams xml:idf="f1"/>
 		</indi>	
 
-		<indi xml:id ="i3" name="fred" sname="Beegood">
-			<famc xml:id="f1"/>
+		<indi xml:idi ="i3" name="fred" sname="Beegood">
+			<famc xml:idf="f1"/>
 		</indi>
 
-		<indi xml:id ="i4" name="lea" sname="Beegood">
+		<indi xml:idf ="i4" name="lea" sname="Beegood">
 			<sex>F</sex>
-			<famc xml:id="f1"/>
+			<famc xml:idf="f1"/>
 		</indi>
 
-		<fam>
-			<husb id="i1" />
-			<wife id="i2" />
-			<chil id="i3" />
-			<chil id="i4" />
+		<fam idf="f1">
+			<husb idi="i1" />
+			<wife idi="i2" />
+			<chil idi="i3" />
+			<chil idi="i4" />
 		</fam>
 </gedcom>
 
+
+
+troisième version 
+
+
+deuxième version pour les individus 
+<gedcom>
+	<head>
+	</head>
+		<indi idi ="i1">
+			<name>john</name>
+			<sname>Beegood</sname>
+			<sex>M</sex>
+			<fams xml:idf="f1"/>
+		</indi>
+		...
+
+		<fam idf="f1">
+			<husb idi="i1" />
+			<wife idi="i2" />
+			<chil idi="i3" />
+			<chil idi="i4" />
+		</fam>
+</gedcom>
+
+
+
+
+troisième version les individus et les familles
+<gedcom>
+	<head>
+	</head>
+		<indi idi ="i1">
+			<name f_name="john" s_name ="Beegood"/>
+			<sex>M</sex>
+			<fams idf="f1" relation ="husb"/>
+		</indi>
+
+
+</gedcom>
 
 
