@@ -1,16 +1,42 @@
 import scala.io.Source
 import scala.util.matching.Regex
 import scala.collection.mutable.Stack
-
+import java.io.PrintWriter
 
 /**
  * @author clement
  */
-object parse extends App{
+object parse {
   
   var xml_file = ""
   var pat_word = """\S+""".r
   var pat_s_close ="""FAM(C|S)|SEX|HUSB|WIFE|CHIL""".r //paterne des balises auto-fermantes
+  var res = ""
+
+  //Determine si le chemin du fichier existe
+  def exists(file:String) : Boolean = {
+    try {
+      Source.fromFile(file)
+    }catch {
+      case e:java.io.FileNotFoundException => 
+	{
+	  println("Le fichier "+file+" n'existe pas")
+	  return false
+	}
+    }
+    return true
+  }
+
+  //Prend un nom fichier et remplace son extension par .xml (ou l'ajoute si le fichier n'avait pas d'extensions)
+  def replaceExtension(filename:String) = {
+    def addXmlAt(index: Int) : String = (
+      if (index >= 0) filename substring (0, index) 
+      else filename
+    ) + ".xml"
+
+    addXmlAt(filename lastIndexOf '.')
+  }
+
 
   //retourne le nombre de tabulations demandé :
   def addTab(tab:Int) = {
@@ -33,52 +59,54 @@ object parse extends App{
     var pile = new Stack[(Int,String)]
     pile.push((-1,"gedcom"))
     
-    var res = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gedcom>\n"
+    res = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gedcom>\n"
     
     //0 - lire ligne à ligne le fichier source :
-    for( line <- Source.fromFile("complet.ged").getLines()){
+    Source.fromFile(f).getLines();
+    for( line <- Source.fromFile(f).getLines()){
       println(line)//afficher la ligne extaite 
       var it = pat_word.findAllIn(line)//ittérator sur la ligne
       var s_close = false //self close : détermine si la balise est auto fermante
       
       if(it.hasNext){//ligne non vide
-       try{
+	try{
           //1 - recherche du niveau (num) :
           val n = it.next
           var num = n.toInt
-        
+          
           //2 - recheche du nom de l'entité :
           var entity = it.next//read entity ce qui est lu
           var w_entity = entity//write entity ce qui sera vraiment écris
 
           
           //3 - on détecte le type d'entité (but modifier leurs balise): //TODO : voir si c'est possible d'utiliser un match case
+
           //3.1 entité identifiant (self close):
           if(r("""@.\d+@""".r,entity)){       
               val id = """.\d+""".r.findFirstIn(entity).get
               entity = it.next
               w_entity=""
-              w_entity+= entity+" id="+id
+              w_entity+= entity+" id=\""+id+"\""
           }else
             
           //3.2 entité FAMC FAMS (self close):
           if(r("""FAM(C|S)""".r,entity)){
             val id_brut = it.next
             val id = """.\d+""".r.findFirstIn(id_brut).get 
-            w_entity+=" id="+id
+            w_entity+=" id=\""+id+"\""
           }else
           
           //3.3 entité SEX (self close) (parti pris : on suppose qu'il n'y a pas de 3eme sexe)
           if(r("""SEX""".r,entity)){
             val sex = it.next
-            w_entity+=" type="+sex
+            w_entity+=" type=\""+sex+"\""
           }else
           
           //3.4 type de famille (self close)
           if(r("""HUSB|WIFE|CHIL""".r,entity)){ //XXX voir si peut être réuni avec FAMC et FAMS
             val id_brut = it.next
             val id = """.\d+""".r.findFirstIn(id_brut).get
-             w_entity+=" id="+id
+             w_entity+=" id=\""+id+"\""
           }else
             
           //3.5 fin de document
@@ -134,11 +162,34 @@ object parse extends App{
       }
     }
     
-    println("le contenu de res =====\n"+res)///XXX a modifier pour que le résultat soit dans un fichier
+    println("le contenu de res =====\n"+res)///XXX a modifier pour que le résultat soit dans un fichier TODO: A effacer quand on aura plus besoin de la console
+    toFile(replaceExtension(f))
   }
 
   
-  gedcomToXml("")
+  def toFile(filename:String) = {
+
+    val File = new PrintWriter(filename)
+    File.write(res)
+    File.close()
+
+  }
+
+  /**
+   * @author Alain
+  */
+  def main(args : Array[String]) {
+
+    if(args.length < 1) {
+      println("Veuillez fournir un fichier gedcom à traduire");
+      System.exit(-1);
+    }
+
+    for(arg <- args) {
+      if(exists(arg))
+	gedcomToXml(arg);
+    }
+  }
 }
 
 
