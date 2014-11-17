@@ -62,7 +62,6 @@ object parse {
     res = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gedcom>\n"
     
     //0 - lire ligne à ligne le fichier source :
-    Source.fromFile(f).getLines();
     for( line <- Source.fromFile(f).getLines()){
       println(line)//afficher la ligne extaite 
       var it = pat_word.findAllIn(line)//ittérator sur la ligne
