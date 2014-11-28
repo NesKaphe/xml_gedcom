@@ -10,7 +10,7 @@ object parse {
   
   var xml_file = ""
   var pat_word = """\S+""".r
-  var pat_s_close ="""FAM(C|S)|SEX|HUSB|WIFE|CHIL""".r //paterne des balises auto-fermantes
+  var pat_s_close ="""FAM(C|S)|SEX|HUSB|WIFE|CHIL""".toLowerCase.r //paterne des balises auto-fermantes
   var res = ""
 
   //Determine si le chemin du fichier existe
@@ -56,8 +56,10 @@ object parse {
   
     
   def gedcomToXml (f:String): Unit = {
-    var pile = new Stack[(Int,String)]
+    var pile = new Stack[(Int,String)]//int = niveau , sgring = l'entité
+    
     pile.push((-1,"gedcom"))
+    var prev_level = -1//niveau précédent
     
     res = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gedcom>\n"
     
@@ -74,7 +76,7 @@ object parse {
           var num = n.toInt
           
           //2 - recheche du nom de l'entité :
-          var entity = it.next//read entity ce qui est lu
+          var entity = it.next.toLowerCase//read entity ce qui est lu
           var w_entity = entity//write entity ce qui sera vraiment écris
 
           
@@ -83,33 +85,33 @@ object parse {
           //3.1 entité identifiant (self close):
           if(r("""@.\d+@""".r,entity)){       
               val id = """.\d+""".r.findFirstIn(entity).get
-              entity = it.next
+              entity = it.next.toLowerCase
               w_entity=""
               w_entity+= entity+" id=\""+id+"\""
           }else
             
           //3.2 entité FAMC FAMS (self close):
-          if(r("""FAM(C|S)""".r,entity)){
-            val id_brut = it.next
+          if(r("""FAM(C|S)""".toLowerCase.r,entity)){
+            val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get 
             w_entity+=" id=\""+id+"\""
           }else
           
           //3.3 entité SEX (self close) (parti pris : on suppose qu'il n'y a pas de 3eme sexe)
-          if(r("""SEX""".r,entity)){
-            val sex = it.next
+          if(r("""SEX""".toLowerCase.r,entity)){
+            val sex = it.next.toLowerCase
             w_entity+=" type=\""+sex+"\""
           }else
           
           //3.4 type de famille (self close)
-          if(r("""HUSB|WIFE|CHIL""".r,entity)){ //XXX voir si peut être réuni avec FAMC et FAMS
-            val id_brut = it.next
+          if(r("""HUSB|WIFE|CHIL""".toLowerCase.r,entity)){ //XXX voir si peut être réuni avec FAMC et FAMS
+            val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get
              w_entity+=" id=\""+id+"\""
           }else
             
           //3.5 fin de document
-          if(r("""TRLR""".r,entity)){//XXX : problème éventuel la boucle ce termine exactement quand la balise TRLR arrive vérifier si avec des espaces en dessous ça casse pas le document xml
+          if(r("""TRLR""".toLowerCase.r,entity)){
             num = -1
             w_entity = ""
           }
@@ -117,32 +119,37 @@ object parse {
           //TODO : detection adresse internet FILE
           
           
-          
-          //4 - fermer la balise celon le contenu de la pile : XXX : donné plus d'explication
+          //4 - fermer la balise celon le contenu de la pile :
           num match {
 
             //4.2 égale au num dans la pile
             case n if (n == pile.head._1)  =>
               if(!isClosed(pile.head._2))
                 res+="</"+pile.head._2+">"//fermeture balise
+              prev_level = pile.head._1
               pile.pop()
 
             //4.3 inférieur au num dans la pile
-            case n if (n < pile.head._1) =>                        
+            case n if (n < pile.head._1) =>
               while(!(pile.head._1 < num) ){
-                if(!isClosed(pile.head._2))//verifier que nous ne somme pas une balise auto-fermante
-                  res+="\n"+addTab(pile.head._1)+"</"+pile.head._2+">"//fermeture balise
+                if(!isClosed(pile.head._2)){//verifier que nous ne somme pas une balise auto-fermante
+                    if(prev_level <= pile.head._1)//debug
+                      res+="</"+pile.head._2+">"
+                    else
+                      res+="\n"+addTab(pile.head._1)+"</"+pile.head._2+">"
+                }
+                prev_level = pile.head._1
                 pile.pop()
               }
               
-            case _ => true //TODO trouver comment ne rien faire  (si on retire cette ligne ça bug)
+            case _ => //true //TODO trouver comment ne rien faire  (si on retire cette ligne ça bug)
 
           }
           
           //5 ouvrir la balise celon le contenu
           pile.push((num,entity))
           if(isClosed(entity)){
-            res+="\n"+addTab(num)+"<"+w_entity+" />"//TODO possible d'utiliser StringContex à la place de ça qui est lourd
+            res+="\n"+addTab(num)+"<"+w_entity+" />"
           }else{
             res+="\n"+addTab(num)+"<"+w_entity+">"//ouverture balise
           }
@@ -161,7 +168,7 @@ object parse {
       }
     }
     
-    println("le contenu de res =====\n"+res)///XXX a modifier pour que le résultat soit dans un fichier TODO: A effacer quand on aura plus besoin de la console
+    println("le contenu de res =====\n"+res)//TODO: A effacer quand on aura plus besoin de la console
     toFile(replaceExtension(f))
   }
 
@@ -186,7 +193,7 @@ object parse {
 
     for(arg <- args) {
       if(exists(arg))
-	gedcomToXml(arg);
+	      gedcomToXml(arg);
     }
   }
 }
