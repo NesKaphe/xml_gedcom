@@ -9,10 +9,37 @@ import java.io.PrintWriter
 object parse {
   
   var xml_file = ""
-  var pat_word = """\S+""".r
-  var pat_s_close ="""FAM(C|S)|SEX|HUSB|WIFE|CHIL""".toLowerCase.r //paterne des balises auto-fermantes
+  var pat_spec = """<|>|\&|'|\"""".r//paterne caractère spéciaux
+  var pat_word = """\S+""".r//paterne sur les caractères visibles
+  var pat_s_close ="""FAM(C|S)|SEX|HUSB|WIFE|CHIL|NAME""".toLowerCase.r //paterne des balises auto-fermantes
   var res = ""
 
+  
+  //convertis tout les caractères spéciaux pour les adapter au xml
+  def convertSpecial(s:String):String={
+    var st = s
+    if(pat_spec.findFirstIn(s).isEmpty) return s
+    
+    st = """\&""".r replaceAllIn(st, "&amp;")
+    st = """<""".r replaceAllIn(st, "&lt;")
+    st = """>""".r replaceAllIn(st, "&gt;")
+    st = """\"""".r replaceAllIn(st, "&quot;")
+    st = """\'""".r replaceAllIn(st, "&apos;")
+    
+    return st
+  }
+  
+  //vide le contenu de l'itérator de string et retourne la chaine
+  def restOfLine(it:Iterator[String],separator:String):String={
+    var str = ""
+    for(s<-it){
+      str+=s
+      if(it.hasNext)
+        str+=separator
+    }
+    return str
+  }
+  
   //Determine si le chemin du fichier existe
   def exists(file:String) : Boolean = {
     try {
@@ -54,7 +81,7 @@ object parse {
   def isClosed(entity:String) =//TODO : modifier en isSelfClose
     r(pat_s_close,entity)
   
-    
+  
   def gedcomToXml (f:String): Unit = {
     var pile = new Stack[(Int,String)]//int = niveau , sgring = l'entité
     
@@ -70,7 +97,7 @@ object parse {
       var s_close = false //self close : détermine si la balise est auto fermante
       
       if(it.hasNext){//ligne non vide
-	try{
+	      try{
           //1 - recherche du niveau (num) :
           val n = it.next
           var num = n.toInt
@@ -104,7 +131,7 @@ object parse {
           }else
           
           //3.4 type de famille (self close)
-          if(r("""HUSB|WIFE|CHIL""".toLowerCase.r,entity)){ //XXX voir si peut être réuni avec FAMC et FAMS
+          if(r("""HUSB|WIFE|CHIL""".toLowerCase.r,entity)){ //XXX voir si peut réuni avec FAMC et FAMS
             val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get
              w_entity+=" id=\""+id+"\""
@@ -116,6 +143,19 @@ object parse {
             w_entity = ""
           }
 
+          //3.6 entité NAME
+          if(r("""NAME""".toLowerCase.r,entity)){
+            var rest = convertSpecial(restOfLine(it," "))
+            var array_name = """/""".r split(rest)
+            var alias=""//given name
+            var sur=""//surname
+            if(array_name.length > 0)
+              alias+=array_name(0)
+            if(array_name.length>1)
+              sur+=array_name(1)
+            w_entity+=" alias=\""+alias+"\" surname=\""+sur+"\""
+          }
+          
           //TODO : detection adresse internet FILE
           
           
@@ -155,12 +195,12 @@ object parse {
           }
           
           
-          if(!isClosed(entity)){
-            //6 on complète avec le reste de ligne
-            for(x <-it){
-              res+=" "+x
-            }
+          //6 on complète avec le reste de ligne
+          var rest_of_line = ""
+          for(x <-it){
+            rest_of_line+=" "+x
           }
+          res+=convertSpecial(rest_of_line)
       
         }catch {
           case e:Exception => println("problème le format gedcom n'est pas respecté")
@@ -181,11 +221,14 @@ object parse {
 
   }
 
-  /**
-   * @author Alain
-  */
-  def main(args : Array[String]) {
 
+  /** main*/
+  def main(args : Array[String]) {
+    
+    //test de conversion
+    var str = "machin truc < bidule > much & foo \" bar ' baz "
+    println("\n\navant:"+str+"\naprès:"+convertSpecial(str)+"\n\n")
+    
     if(args.length < 1) {
       println("Veuillez fournir un fichier gedcom à traduire");
       System.exit(-1);
@@ -195,6 +238,7 @@ object parse {
       if(exists(arg))
 	      gedcomToXml(arg);
     }
+    
   }
 }
 
