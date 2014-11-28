@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE gedcom [
+    <!ELEMENT head >
+
+    
+    <!ELEMENT indi (name? , sex? , famc? ,
+	      fams* , titl? , birt? , deat? ,
+	      buri? , chr? , chan?, marr? ) >
+    <!ATTLIST indi id ID #REQUIRED> <!-- Q:required ici? -->
+
+
+    <!ELEMENT fam (husb, wife, chil*, marr?, div?) >
+    <!ATTLIST fam id ID #REQUIRED> <!-- Q:required ici? -->
+
+    <!ELEMENT name EMPTY>
+    <!ATTLIST name alias   CDATA #IMPLIED
+	           surname CDATA #IMPLIED>
+
+
+    <!ELEMENT sex EMPTY>
+    <!ATTLIST sex type CDATA #REQUIRED>
+
+    <!ELEMENT titl (#PCDATA)>
+
+    <!ELEMENT birt (date?, plac?) >
+
+    <!ELEMENT deat (date?, plac?) >
+
+    <!ELEMENT wife EMPTY>
+    <!ATTLIST wife id IDREF #REQUIRED>
+
+    <!ELEMENT chil EMPTY>
+    <!ATTLIST chil id IDREF #REQUIRED>
+
+    <!ELEMENT famc EMPTY>
+    <!ATTLIST famc id IDREF #REQUIRED>
+
+    <!ELEMENT fams EMPTY>
+    <!ATTLIST fams id IDREF #REQUIRED>
+
+    <!ELEMENT husb EMPTY>
+    <!ATTLIST husb id IDREF #REQUIRED>
+
+    <!ELEMENT marr (date?, plac?) >
+
+    <!ELEMENT buri (date?, plac?) >
+
+    <!ELEMENT chr (date?, plac?) >
+
+    <!ELEMENT date (#PCDATA) >
+
+    <!ELEMENT plac (#PCDATA) >
+]>
