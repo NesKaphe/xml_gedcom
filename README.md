@@ -6,13 +6,11 @@ projet réalisé par Clément Charasson et Alain Dias
 
 2. comment utiliser le code (actuellement ça ne marche pas comme ça)
 	*se positionner dans le répertoire /src
-	~~~sh
-	scala parse [chemin du fichier.ged] 
-	~~~
+	~~~~sh
+	scala parse [chemin du fichier.ged]
+	~~~~
 
 2. comment le code marche réellement actuellement
-	*se positionner dans le répertoire /parser_test
-	~~~sh
-	scala parse
-	~~~
-	*le chemin n'est pas encore utilisé il faut changé directement dans le code
+	*se positionner dans le répertoire racine
+  *faire sbt
+  *faire run data/fichier.ged
