@@ -121,11 +121,11 @@ object parse {
           if(r("""FAM(C|S)""".toLowerCase.r,entity)){
             val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get 
-            w_entity+=" id=\""+id+"\""
+            w_entity+=" ref=\""+id+"\""
           }else
           
           //3.3 entité SEX (self close)
-          if(r("""SEX""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
+          if("sex".equals(entity)){
             val sex = it.next.toLowerCase
             w_entity+=" type=\""+sex+"\""
           }else
@@ -134,35 +134,42 @@ object parse {
           if(r("""HUSB|WIFE|CHIL""".toLowerCase.r,entity)){
             val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get
-             w_entity+=" id=\""+id+"\""
+             w_entity+=" ref=\""+id+"\""
           }else
             
           //3.5 fin de document
-          if(r("""TRLR""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
+          if("trlr".equals(entity)){
             num = -1
             w_entity = ""
-          }
+          }else
 
           //3.6 entité NAME (self close)
-          if(r("""NAME""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
+          if("name".equals(entity)){
             var rest = convertSpecial(restOfLine(it," "))
             var array_name = """/""".r split(rest)
-            var alias=""//given name
+            var alias=""//first name
             var sur=""//surname
             if(array_name.length > 0)
               alias+=array_name(0)
             if(array_name.length>1)
               sur+=array_name(1)
             w_entity+=" alias=\""+alias+"\" surname=\""+sur+"\""
-          }
+          }else
           
           //3.7 entité FILE
-          if(r("""FILE""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
-            w_entity+=" ref=\""+restOfLine(it, "")+"\"" 
-          }
+          if("file".equals(entity)){
+            w_entity+=" ref=\""+restOfLine(it, " ")+"\"" 
+          }else
           
-          //3.8 entité SOUR XXX problème elle à soit des @ @ soit rien ...
-          //if("SOUR")
+          //3.8 entité SOUR
+          if("sour".equals(entity)){
+            //on cherche si c'est un id:
+            var ref = restOfLine(it, " ").split("@")
+            if(ref.length==1)
+              w_entity+=" ref=\""+ref(0)+"\""
+            else
+              w_entity+=" ref=\""+ref(1).toLowerCase+"\""
+          }
           
           
           //4 - fermer la balise celon le contenu de la pile :
@@ -216,20 +223,14 @@ object parse {
 
   
   def toFile(filename:String) = {
-
     val File = new PrintWriter(filename)
     File.write(res)
     File.close()
-
   }
 
 
   /** main*/
   def main(args : Array[String]) {
-    
-    //test de conversion
-    var str = "machin truc < bidule > much & foo \" bar ' baz "
-    println("\n\navant:"+str+"\naprès:"+convertSpecial(str)+"\n\n")
     
     if(args.length < 1) {
       println("Veuillez fournir un fichier gedcom à traduire");
