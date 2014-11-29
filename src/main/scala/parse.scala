@@ -124,27 +124,27 @@ object parse {
             w_entity+=" id=\""+id+"\""
           }else
           
-          //3.3 entité SEX (self close) (parti pris : on suppose qu'il n'y a pas de 3eme sexe)
-          if(r("""SEX""".toLowerCase.r,entity)){
+          //3.3 entité SEX (self close)
+          if(r("""SEX""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
             val sex = it.next.toLowerCase
             w_entity+=" type=\""+sex+"\""
           }else
           
           //3.4 type de famille (self close)
-          if(r("""HUSB|WIFE|CHIL""".toLowerCase.r,entity)){ //XXX voir si peut réuni avec FAMC et FAMS
+          if(r("""HUSB|WIFE|CHIL""".toLowerCase.r,entity)){
             val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get
              w_entity+=" id=\""+id+"\""
           }else
             
           //3.5 fin de document
-          if(r("""TRLR""".toLowerCase.r,entity)){
+          if(r("""TRLR""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
             num = -1
             w_entity = ""
           }
 
-          //3.6 entité NAME
-          if(r("""NAME""".toLowerCase.r,entity)){
+          //3.6 entité NAME (self close)
+          if(r("""NAME""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
             var rest = convertSpecial(restOfLine(it," "))
             var array_name = """/""".r split(rest)
             var alias=""//given name
@@ -156,7 +156,13 @@ object parse {
             w_entity+=" alias=\""+alias+"\" surname=\""+sur+"\""
           }
           
-          //TODO : detection adresse internet FILE
+          //3.7 entité FILE
+          if(r("""FILE""".toLowerCase.r,entity)){//TODO on peux remplacer par equals
+            w_entity+=" ref=\""+restOfLine(it, "")+"\"" 
+          }
+          
+          //3.8 entité SOUR XXX problème elle à soit des @ @ soit rien ...
+          //if("SOUR")
           
           
           //4 - fermer la balise celon le contenu de la pile :
@@ -182,26 +188,22 @@ object parse {
                 pile.pop()
               }
               
-            case _ => //true //TODO trouver comment ne rien faire  (si on retire cette ligne ça bug)
-
+            case _ =>
           }
           
-          //5 ouvrir la balise celon le contenu
-          pile.push((num,entity))
-          if(isClosed(entity)){
-            res+="\n"+addTab(num)+"<"+w_entity+" />"
-          }else{
-            res+="\n"+addTab(num)+"<"+w_entity+">"//ouverture balise
+          //5 ouvrir la balise celon le contenu (sauf quand c'est CONT)
+          res+="\n"+addTab(num)
+          if( !"cont".equals(entity)){
+            pile.push((num,entity))
+            if(isClosed(entity))
+              res+="<"+w_entity+" />"
+            else
+              res+="<"+w_entity+">"
           }
-          
           
           //6 on complète avec le reste de ligne
-          var rest_of_line = ""
-          for(x <-it){
-            rest_of_line+=" "+x
-          }
-          res+=convertSpecial(rest_of_line)
-      
+          res+=convertSpecial(restOfLine(it, " "))
+          
         }catch {
           case e:Exception => println("problème le format gedcom n'est pas respecté")
         }
@@ -241,25 +243,3 @@ object parse {
     
   }
 }
-
-
-/*
-//petit teste (mis de coté)
-
-implicit class Regex(sc: StringContext) {
-  def r = new util.matching.Regex(sc.parts.mkString, sc.parts.tail.map(_ => "x"): _*)
-}
-
-for(ent <- pat_word.findAllIn(line)){
-  ent match{
-    case r"\d+"  => println(ent+"--est un nombre")
-    case r"[A-Z]+" => println(ent+"--est un mot gedcom")
-    case r"\w+" => println(ent+"--est un mot non gedcom")
-    //case r"@.\d+@" => println(ent+" est un id")
-    case r"@F\d+@" => println(ent+" est un id Fam")
-    case r"@I\d+@" => println(ent+" est un id Ind")
-    case _=> println(ent+"--n'est pas pris en compte")
-  }
-}
-
-*/
