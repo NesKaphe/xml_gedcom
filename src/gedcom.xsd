@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- Element racine : gedcom -->
+  <xsd:element name="gedcom">
+    <xsd:complexType>
+      <xsd:sequence>
+	<xsd:element name="head" />
+	<xsd:choice minOccurs="0" maxOccurs="unbounded">
+	  <xsd:element name="indi">
+
+	    <!-- Contenu de indi -->
+	    <xsd:complexType>
+
+	      <xsd:sequence>
+
+		<xsd:element name="name">
+		  <xsd:complexType>
+		    <xsd:attribute name="alias" type="xsd:string" />
+		    <xsd:attribute name="surname" type="xsd:string" />
+		  </xsd:complexType>
+		</xsd:element>
+
+		<xsd:element name="sex" minOccurs="0">
+		  <xsd:complexType>
+		    <xsd:attribute name="type" type="xsd:string" />
+		  </xsd:complexType>
+		</xsd:element>
+
+		<xsd:element name="fams" type="referenceId" minOccurs="0" />
+
+		<xsd:element name="famc" type="referenceId" minOccurs="0" />
+
+	      </xsd:sequence>
+
+	      <xsd:attribute name="id" type="xsd:ID" use="required" />
+	    </xsd:complexType>
+
+	    <!-- fin contenu de indi -->
+
+	  </xsd:element>
+
+
+	  <xsd:element name="fam">
+	    <!-- Contenu de fam -->
+
+	    <xsd:complexType>
+	      <xsd:sequence>
+
+		<xsd:element name="husb" type="referenceId" />
+
+		<xsd:element name="wife" type="referenceId" />
+
+		<xsd:element name="chil" type="referenceId" maxOccurs="unbounded" />
+
+	      </xsd:sequence>
+
+	      <xsd:attribute name="id" type="xsd:ID" use="required" />
+	    </xsd:complexType>
+	    <!-- fin contenu de fam -->
+	  </xsd:element>
+
+
+	</xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <!-- types communs  -->
+  <xsd:complexType name="referenceId">
+    <xsd:attribute name="ref" type="xsd:IDREF" use="required" />
+  </xsd:complexType>
+
+</xsd:schema>
