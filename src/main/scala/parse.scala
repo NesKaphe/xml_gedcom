@@ -92,7 +92,7 @@ object parse {
     
     //0 - lire ligne à ligne le fichier source :
     for( line <- Source.fromFile(f).getLines()){
-      println(line)//afficher la ligne extaite 
+      //println(line)//afficher la ligne extaite 
       var it = pat_word.findAllIn(line)//ittérator sur la ligne
       var s_close = false //self close : détermine si la balise est auto fermante
       
@@ -217,7 +217,7 @@ object parse {
       }
     }
     
-    println("le contenu de res =====\n"+res)//TODO: A effacer quand on aura plus besoin de la console
+    //println("le contenu de res =====\n"+res)//TODO: A effacer quand on aura plus besoin de la console
     toFile(replaceExtension(f))
   }
 

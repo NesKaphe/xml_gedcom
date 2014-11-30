@@ -1,53 +1,111 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE gedcom [
-    <!ELEMENT head >
+<!ELEMENT gedcom ( head, sour*, subm?, ( (indi+, fam*) | (fam+, indi*) )? )>
 
-    
-    <!ELEMENT indi (name? , sex? , famc? ,
-	      fams* , titl? , birt? , deat? ,
-	      buri? , chr? , chan?, marr? ) >
-    <!ATTLIST indi id ID #REQUIRED> <!-- Q:required ici? -->
+<!ELEMENT head (sour?, dest?, date?, (char?, file?)*, gedc?)>
+
+<!ELEMENT sour (#PCDATA | vers | name | corp)*>
+<!ATTLIST sour ref CDATA #IMPLIED
+	  id CDATA #IMPLIED>
+
+<!ELEMENT subm (name, addr, phon, comm)>
+<!ATTLIST subm id CDATA #REQUIRED>
+
+<!ELEMENT comm (#PCDATA)>
+
+<!ELEMENT vers (#PCDATA)>
+
+<!ELEMENT corp (#PCDATA | addr | phon)*>
+
+<!ELEMENT dest (#PCDATA)>
+
+<!ELEMENT char (#PCDATA)>
+
+<!ELEMENT file (form?, numb?)>
+<!ATTLIST file ref CDATA #REQUIRED>
+
+<!ELEMENT addr (#PCDATA)>
+
+<!ELEMENT phon (#PCDATA)>
+
+<!ELEMENT gedc (vers)>
 
 
-    <!ELEMENT fam (husb, wife, chil*, marr?, div?) >
-    <!ATTLIST fam id ID #REQUIRED> <!-- Q:required ici? -->
-
-    <!ELEMENT name EMPTY>
-    <!ATTLIST name alias   CDATA #IMPLIED
-	           surname CDATA #IMPLIED>
+<!ELEMENT indi (name?, (sex? , stil?, ille?, titl?)* ,
+	  sour? , chan?, numb?, birt?, (deat?, chr?)*, bapm?, (misc?, buri?)*, attr?,
+	  occu?, refn?, marr?, (fams?, famc?)*, obje?, note? ) >
+<!ATTLIST indi id ID #REQUIRED>
 
 
-    <!ELEMENT sex EMPTY>
-    <!ATTLIST sex type CDATA #REQUIRED>
+<!ELEMENT fam (sour?, chan?, numb?, (marr?, div?, anul?, misc?,
+	  enga?, husb?, wife?, chil?)*, obje?)>
+<!ATTLIST fam id ID #REQUIRED>
 
-    <!ELEMENT titl (#PCDATA)>
+<!ELEMENT name EMPTY>
+<!ATTLIST name alias   CDATA #IMPLIED
+	  surname CDATA #IMPLIED>
 
-    <!ELEMENT birt (date?, plac?) >
 
-    <!ELEMENT deat (date?, plac?) >
+<!ELEMENT sex EMPTY>
+<!ATTLIST sex type CDATA #REQUIRED>
 
-    <!ELEMENT wife EMPTY>
-    <!ATTLIST wife id IDREF #REQUIRED>
+<!ELEMENT titl (#PCDATA)>
 
-    <!ELEMENT chil EMPTY>
-    <!ATTLIST chil id IDREF #REQUIRED>
+<!ELEMENT birt (date?, plac?, quay?) >
 
-    <!ELEMENT famc EMPTY>
-    <!ATTLIST famc id IDREF #REQUIRED>
+<!ELEMENT deat (date?, plac?, quay?) >
 
-    <!ELEMENT fams EMPTY>
-    <!ATTLIST fams id IDREF #REQUIRED>
+<!ELEMENT bapm (date?, plac?, quay?) >
 
-    <!ELEMENT husb EMPTY>
-    <!ATTLIST husb id IDREF #REQUIRED>
+<!ELEMENT wife EMPTY>
+<!ATTLIST wife ref IDREF #REQUIRED>
 
-    <!ELEMENT marr (date?, plac?) >
+<!ELEMENT chil EMPTY>
+<!ATTLIST chil ref IDREF #REQUIRED>
 
-    <!ELEMENT buri (date?, plac?) >
+<!ELEMENT famc EMPTY>
+<!ATTLIST famc ref IDREF #REQUIRED>
 
-    <!ELEMENT chr (date?, plac?) >
+<!ELEMENT fams EMPTY>
+<!ATTLIST fams ref IDREF #REQUIRED>
 
-    <!ELEMENT date (#PCDATA) >
+<!ELEMENT husb EMPTY>
+<!ATTLIST husb ref IDREF #REQUIRED>
 
-    <!ELEMENT plac (#PCDATA) >
-]>
+<!ELEMENT marr (date?, plac?, quay?) >
+
+<!ELEMENT quay (#PCDATA)>
+
+<!ELEMENT buri (date?, plac?, quay?) >
+
+<!ELEMENT chr (date?, plac?, quay?) >
+
+<!ELEMENT date (#PCDATA) >
+
+<!ELEMENT plac (#PCDATA) >
+
+<!ELEMENT obje (file, form?, titl)>
+
+<!ELEMENT form (#PCDATA)>
+
+<!ELEMENT chan (date)>
+
+<!ELEMENT numb (#PCDATA)>
+
+<!ELEMENT occu (#PCDATA)>
+
+<!ELEMENT div (#PCDATA | quay)*>
+
+<!ELEMENT anul (date?, quay)>
+
+<!ELEMENT misc (#PCDATA | date | plac | quay | sour)*>
+
+<!ELEMENT enga (date, quay)>
+
+<!ELEMENT note (#PCDATA)>
+
+<!ELEMENT refn (#PCDATA)>
+
+<!ELEMENT ille EMPTY>
+
+<!ELEMENT attr (#PCDATA)>
+
+<!ELEMENT stil EMPTY>
