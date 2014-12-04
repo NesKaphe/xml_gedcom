@@ -11,6 +11,13 @@ projet réalisé par Clément Charasson et Alain Dias
 	~~~~
 
 2. comment le code marche réellement actuellement
-	*se positionner dans le répertoire racine
+  *se positionner dans le répertoire racine
   *faire sbt
   *faire run data/fichier.ged
+
+
+3. Valider selon la DTD gedcom.dtd
+  *Se positionner dans le répertoire racine
+  *Rendre le script validateDtd.sh executable (chmod u+x)
+  *Lancer le script ./validateDtd.sh
+  *Le script s'arrete au premier fichier non valide et lance le parse s'il ne trouve pas le fichier xml
