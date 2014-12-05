@@ -15,16 +15,20 @@
 	      
 	      <xsd:element name="date" type="xsd:string" minOccurs="0" />
 
-	      <xsd:element name="char" type="xsd:string" minOccurs="0" />
+	      <xsd:choice minOccurs="0" maxOccurs="unbounded">
 
-	      <xsd:element name="file" minOccurs="0">
-		<xsd:complexType>
-		  <xsd:sequence minOccurs="0">
-		    <xsd:element name="numb" type="xsd:string" />
-		  </xsd:sequence>
-		  <xsd:attribute name="ref" type="xsd:anyURI" use="required" />
-		</xsd:complexType>
-	      </xsd:element>
+		<xsd:element name="char" type="xsd:string" />
+
+		<xsd:element name="file">
+		  <xsd:complexType>
+		    <xsd:sequence minOccurs="0">
+		      <xsd:element name="numb" type="xsd:integer" />
+		    </xsd:sequence>
+		    <xsd:attribute name="ref" type="xsd:anyURI" use="required" />
+		  </xsd:complexType>
+		</xsd:element>
+
+	      </xsd:choice>
 
 	      <xsd:element name="gedc" minOccurs="0">
 		<xsd:complexType>
@@ -50,6 +54,19 @@
 	    </xsd:complexType>
 	  </xsd:element>
 
+	  
+	  <xsd:element name="subm">
+	    <xsd:complexType>
+	      <xsd:sequence>
+		<xsd:element name="name" type="nameType" />
+		<xsd:element name="addr" type="xsd:string" />
+		<xsd:element name="phon" type="xsd:string" />
+		<xsd:element name="comm" type="xsd:string" />
+	      </xsd:sequence>
+	      <xsd:attribute name="id" type="xsd:ID" />
+	    </xsd:complexType>
+	  </xsd:element>
+
 	  <xsd:element name="indi">
 
 	    <!-- Contenu de indi -->
@@ -57,12 +74,21 @@
 
 	      <xsd:sequence>
 
-		<xsd:element name="name" minOccurs="0" type="nameType" />
-		  
-		<xsd:element name="sex" minOccurs="0">
+		<xsd:element name="name" minOccurs="0" maxOccurs="1" type="nameType" />
+
+		<xsd:element name="titl" minOccurs="0" maxOccurs="1" type="xsd:string" />
+
+		<xsd:element name="sex" minOccurs="0" maxOccurs="1">
 		  <xsd:complexType>
 		    <!-- Faire en sorte d'accepter que m ou f pour l'attribute -->
-		    <xsd:attribute name="type" type="xsd:string" />
+		    <xsd:attribute name="type">
+		      <xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+			  <xsd:enumeration value="m" />
+			  <xsd:enumeration value="f" />
+			</xsd:restriction>
+		      </xsd:simpleType>
+		    </xsd:attribute>
 		  </xsd:complexType>
 		</xsd:element>
 
@@ -78,11 +104,15 @@
 
 		<xsd:element name="numb" type="xsd:integer" minOccurs="0" />
 
-		<xsd:element name="birt" type="dateType" minOccurs="0" />
+		<xsd:element name="birt" type="dateType" minOccurs="0" maxOccurs="1" />
 
-		<xsd:element name="deat" type="dateType" minOccurs="0" />
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
 
-		<xsd:element name="chr" type="dateType" minOccurs="0" />
+		  <xsd:element name="deat" type="dateType" minOccurs="0" />
+		  
+		  <xsd:element name="chr" type="dateType" minOccurs="0" />
+
+		</xsd:choice>
 
 		<xsd:element name="bapm" type="dateType" minOccurs="0" />
 
@@ -140,9 +170,9 @@
 		  <xsd:element name="marr" type="dateType" />
 
 		  <xsd:element name="div">
-		    <xsd:complexType>
+		    <xsd:complexType mixed="true">
 		      <xsd:sequence>
-			<xsd:element name="quay" type="xsd:integer" />
+			<xsd:element name="quay" minOccurs="0" type="xsd:integer" />
 		      </xsd:sequence>
 		    </xsd:complexType>
 		  </xsd:element>
@@ -172,6 +202,7 @@
 
 
   <!-- types communs  -->
+
   <xsd:complexType name="referenceId">
     <xsd:attribute name="ref" type="xsd:IDREF" use="required" />
   </xsd:complexType>

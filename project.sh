@@ -7,23 +7,32 @@
 
 clear
 
-fichiers[0]="data/begood"
-fichiers[1]="data/doe"
-fichiers[2]="data/complet"
-fichiers[3]="data/french"
-fichiers[4]="data/royal"
+#On regarde si le dossier html existe (pour la sortie de la commande xsltproc)
+if [ ! -d "html" ]
+then
+    mkdir html #S'il n'existe pas, on le crée
+else
+    rm html/* #Sinon, on vide son contenu pour regénérer les fichiers html
+fi
 
+dataFolder="data/"
+
+fichiers[0]="begood"
+fichiers[1]="doe"
+fichiers[2]="complet"
+fichiers[3]="french"
+fichiers[4]="royal"
 
 for fichier in ${fichiers[*]}
 do
-    if [ ! -f "${fichier}.xml" ]
+    if [ ! -f "${dataFolder}${fichier}.xml" ]
     then
 	echo "${fichier}.xml non trouvé. Parse : ${fichier}.xml"
-	sbt "run-main parse ${fichier}.ged" >/dev/null
+	sbt "run-main parse ${dataFolder}${fichier}.ged" >/dev/null
     fi
 
     #Dtd
-    result=`xmllint --noout --dtdvalid src/gedcom.dtd "$fichier".xml 2>&1 >/dev/null`
+    result=`xmllint --noout --dtdvalid src/gedcom.dtd "$dataFolder""$fichier".xml 2>&1 >/dev/null`
     erreur=false
     if [ -n "$result" ]
     then
@@ -34,7 +43,7 @@ do
     fi
 
     #Schemas
-    result=`xmllint --noout --schema src/gedcom.xsd "$fichier".xml 2>&1 >/dev/null`
+    result=`xmllint --noout --schema src/gedcom.xsd "$dataFolder""$fichier".xml 2>&1 >/dev/null`
     count=`echo "$result" | wc -w`
 
     if [ $count == 2 ]
@@ -50,7 +59,9 @@ do
 	exit 0
     fi
 
-    #xsl
+    #Xslt
     ##TODO: inserer ici la commande pour générer le html avec xmlproc
+
+    xsltproc --output html/${fichier}.html src/xml2html.xsl ${dataFolder}${fichier}.xml
 done
 
