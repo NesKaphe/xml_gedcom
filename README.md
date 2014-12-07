@@ -3,6 +3,7 @@ projet réalisé par Clément Charasson et Alain Dias
 1. prérequis
 	* avoir la JVM 1.6 ou plus
 	* installer scala
+	* installer sbt
 
 2. comment utiliser le code (actuellement ça ne marche pas comme ça)
 	* se positionner dans le répertoire /src
@@ -17,9 +18,10 @@ projet réalisé par Clément Charasson et Alain Dias
   * faire run data/fichier.ged
 
 
-3. Valider selon la DTD gedcom.dtd
-  * Se positionner dans le répertoire racine
-  * Rendre le script validateDtd.sh executable (chmod u+x)
-  * Lancer le script ./validateDtd.sh
-  * Le script s'arrete au premier fichier non valide et lance le parse s'il ne 
-  trouve pas le fichier xml
+3. Script sh pour automatiser les validation et transformations xslt
+  * Se positionner dans le répertoire racine du projet
+  * Rendre le script projet.sh executable (e.g chmod u+x projet.sh)
+  * Lancer le script ./projet.sh
+  * Le script s'arrete au premier fichier non valide, lance le parse s'il ne 
+  trouve pas le fichier xml et genère le html produit par application de la feuille
+  de style xslt
