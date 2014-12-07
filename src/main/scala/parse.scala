@@ -2,19 +2,15 @@ import scala.io.Source
 import scala.util.matching.Regex
 import scala.collection.mutable.Stack
 import java.io.PrintWriter
+import scala.util.control.Breaks._
 
-/**
- * @author clement
- */
 object parse {
   
-  var xml_file = ""
   var pat_spec = """<|>|\&|'|\"""".r//paterne caractère spéciaux
   var pat_word = """\S+""".r//paterne sur les caractères visibles
   var pat_s_close ="""FAM(C|S)|SEX|HUSB|WIFE|CHIL|NAME""".toLowerCase.r //paterne des balises auto-fermantes
-  var res = ""
+  var res = ""//le résulat
 
-  
   //convertis tout les caractères spéciaux pour les adapter au xml
   def convertSpecial(s:String):String={
     var st = s
@@ -39,31 +35,30 @@ object parse {
     }
     return str
   }
-  
+
   //Determine si le chemin du fichier existe
-  def exists(file:String) : Boolean = {
+  def exists(file: String): Boolean = {
     try {
       Source.fromFile(file)
-    }catch {
-      case e:java.io.FileNotFoundException => 
-	{
-	  println("Le fichier "+file+" n'existe pas")
-	  return false
-	}
+    } catch {
+      case e: java.io.FileNotFoundException =>
+        {
+          println("Le fichier " + file + " n'existe pas")
+          return false
+        }
     }
     return true
   }
 
-  //Prend un nom fichier et remplace son extension par .xml (ou l'ajoute si le fichier n'avait pas d'extensions)
+  //Prend un nom fichier et remplace son extension par .xml 
+  //(ou l'ajoute si le fichier n'avait pas d'extensions)
   def replaceExtension(filename:String) = {
     def addXmlAt(index: Int) : String = (
       if (index >= 0) filename substring (0, index) 
       else filename
     ) + ".xml"
-
     addXmlAt(filename lastIndexOf '.')
   }
-
 
   //retourne le nombre de tabulations demandé :
   def addTab(tab:Int) = {
@@ -78,16 +73,13 @@ object parse {
     regex.findFirstIn(exp).isDefined
 
   //détermine si l'entité est auto-fermante
-  def isClosed(entity:String) =//TODO : modifier en isSelfClose
-    r(pat_s_close,entity)
+  def isClosed(entity:String) = r(pat_s_close,entity)
   
   
   def gedcomToXml (f:String): Unit = {
-    var pile = new Stack[(Int,String)]//int = niveau , sgring = l'entité
-    
-    pile.push((-1,"gedcom"))
+    var pile = new Stack[(Int,String)]//int = niveau , string = l'entité
     var prev_level = -1//niveau précédent
-    
+    pile.push((-1,"gedcom"))
     res = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gedcom>\n"
     
     //0 - lire ligne à ligne le fichier source :
@@ -106,9 +98,7 @@ object parse {
           var entity = it.next.toLowerCase//read entity ce qui est lu
           var w_entity = entity//write entity ce qui sera vraiment écris
 
-          
-          //3 - on détecte le type d'entité (but modifier leurs balise): //TODO : voir si c'est possible d'utiliser un match case
-
+          //3 - on détecte le type d'entité (pour modifier leurs balise):
           //3.1 entité identifiant (self close):
           if(r("""@.\d+@""".r,entity)){       
               val id = """.\d+""".r.findFirstIn(entity).get
@@ -116,33 +106,28 @@ object parse {
               w_entity=""
               w_entity+= entity+" id=\""+id+"\""
           }else
-            
           //3.2 entité FAMC FAMS (self close):
           if(r("""FAM(C|S)""".toLowerCase.r,entity)){
             val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get 
             w_entity+=" ref=\""+id+"\""
           }else
-          
           //3.3 entité SEX (self close)
           if("sex".equals(entity)){
             val sex = it.next.toLowerCase
             w_entity+=" type=\""+sex+"\""
           }else
-          
           //3.4 type de famille (self close)
           if(r("""HUSB|WIFE|CHIL""".toLowerCase.r,entity)){
             val id_brut = it.next.toLowerCase
             val id = """.\d+""".r.findFirstIn(id_brut).get
              w_entity+=" ref=\""+id+"\""
           }else
-            
           //3.5 fin de document
           if("trlr".equals(entity)){
             num = -1
             w_entity = ""
           }else
-
           //3.6 entité NAME (self close)
           if("name".equals(entity)){
             var rest = convertSpecial(restOfLine(it," "))
@@ -155,12 +140,10 @@ object parse {
               sur+=array_name(1)
             w_entity+=" alias=\""+alias+"\" surname=\""+sur+"\""
           }else
-          
           //3.7 entité FILE
           if("file".equals(entity)){
             w_entity+=" ref=\""+restOfLine(it, " ")+"\"" 
           }else
-          
           //3.8 entité SOUR
           if("sour".equals(entity)){
             //on cherche si c'est un id:
@@ -171,30 +154,26 @@ object parse {
               w_entity+=" ref=\""+ref(1).toLowerCase+"\""
           }
           
-          
           //4 - fermer la balise celon le contenu de la pile :
           num match {
-
-            //4.2 égale au num dans la pile
+            //4.1 égale au num dans la pile
             case n if (n == pile.head._1)  =>
               if(!isClosed(pile.head._2))
                 res+="</"+pile.head._2+">"//fermeture balise
               prev_level = pile.head._1
               pile.pop()
-
-            //4.3 inférieur au num dans la pile
+            //4.2 inférieur au num dans la pile
             case n if (n < pile.head._1) =>
-              while(!(pile.head._1 < num) ){
-                if(!isClosed(pile.head._2)){//verifier que nous ne somme pas une balise auto-fermante
-                    if(prev_level <= pile.head._1)//debug
-                      res+="</"+pile.head._2+">"
-                    else
-                      res+="\n"+addTab(pile.head._1)+"</"+pile.head._2+">"
-                }
-                prev_level = pile.head._1
-                pile.pop()
-              }
-              
+		        while(!(pile.head._1 < num) ){
+		          if(!isClosed(pile.head._2)){//verifier que nous ne somme pas une balise auto-fermante
+		              if(prev_level <= pile.head._1)//debug
+		                res+="</"+pile.head._2+">"
+		              else
+		                res+="\n"+addTab(pile.head._1)+"</"+pile.head._2+">"
+		          }
+		          prev_level = pile.head._1
+		          pile.pop()
+		        }
             case _ =>
           }
           
@@ -212,22 +191,18 @@ object parse {
           res+=convertSpecial(restOfLine(it, " "))
           
         }catch {
-          case e:Exception => println("problème le format gedcom n'est pas respecté")
+          case e:Exception =>
         }
       }
     }
-    
-    //println("le contenu de res =====\n"+res)//TODO: A effacer quand on aura plus besoin de la console
     toFile(replaceExtension(f))
   }
-
   
   def toFile(filename:String) = {
     val File = new PrintWriter(filename)
     File.write(res)
     File.close()
   }
-
 
   /** main*/
   def main(args : Array[String]) {
@@ -241,6 +216,5 @@ object parse {
       if(exists(arg))
 	      gedcomToXml(arg);
     }
-    
   }
 }

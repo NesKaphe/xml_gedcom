@@ -2,7 +2,8 @@
 
 #Ce fichier va nous permettre de parser automatiquement les fichiers xml manquants
 #et va aussi verifier que chaque fichier xml produit par le parser est valide selon la dtd
-#et le schema que nous avons écrit
+#et le schema que nous avons écrit. Il génère aussi les fichier xhtml à partir du
+#fichier xsl.
 
 
 clear
@@ -60,8 +61,6 @@ do
     fi
 
     #Xslt
-    ##TODO: inserer ici la commande pour générer le html avec xmlproc
-
-    xsltproc --output html/${fichier}.html src/xml2html.xsl ${dataFolder}${fichier}.xml
+    xsltproc --output html/${fichier}.xhtml src/xml2html.xsl ${dataFolder}${fichier}.xml
 done
 
