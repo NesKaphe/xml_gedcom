@@ -6,6 +6,7 @@ projet réalisé par Clément Charasson et Alain Dias
 
 2. comment utiliser le code (actuellement ça ne marche pas comme ça)
 	* se positionner dans le répertoire /src
+
   ~~~~sh
 	scala parse [chemin du fichier.ged]
   ~~~
