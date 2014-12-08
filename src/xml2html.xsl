@@ -176,7 +176,6 @@
 			 	<xsl:apply-templates select="famc"/>
 			 	<xsl:apply-templates select="fams"/>
 			 	<xsl:apply-templates select="note"/>
-			 	<xsl:apply-templates select="quay" mode="alter"/>
 		 	</ul>
 	 	</div>
 	 	<br/><br/>
@@ -262,7 +261,7 @@
 				<xsl:call-template name="date_place"/>
 			</div>
 		</xsl:if>
-		<xsl:apply-templates select="quay" mode="alter"/>
+		<!--  <xsl:apply-templates select="quay" mode="alter"/> -->
 	</xsl:template>
 	
 	<!--======= DEAT -->
@@ -273,7 +272,6 @@
 				<xsl:call-template name="date_place"/>
 			</div>
 		</xsl:if>
-		<xsl:apply-templates select="quay" mode="alter"/>
 	</xsl:template>
 
 	<!--=========== BURI -->
@@ -284,7 +282,6 @@
 				<xsl:call-template name="date_place"/>
 			</div>
 		</xsl:if>
-		<xsl:apply-templates select="quay" mode="alter"/>
 	</xsl:template>
 	
 	<!--======= FAMC  -->
