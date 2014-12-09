@@ -1,6 +1,21 @@
-1.Le parseur
+\documentclass[12pt,a4paper]{report}
 
-1.1.Choix du langage Scala
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[final]{pdfpages}
+\usepackage{graphicx}
+\usepackage{caption}
+
+\title{\huge \textbf {\emph{Xml} \\Rapport}}
+\author{Charasson Clément \\ Dias Alain}
+
+\begin{document}
+\maketitle
+
+\chapter{Le parseur}
+
+\section{Choix du langage Scala}
 
 Le parser est fait en scala. Plusieurs raisons nous ont fait choisir ce
 langage. La première étant qu'il était nouveau pour nous et le meilleur moyen
@@ -16,7 +31,8 @@ profit car nous avons découvert que les balises étant non modifiable.
 Dernière chose scala à l'avantage d'être concis et donc simple à
 relire.
 
-1.2.Description de l'algoritme
+
+\subsection{Description de l'algoritme}
 
 
 L'algorithme est relativement simple il parcours de façon linéaire le fichier.
@@ -25,7 +41,7 @@ traitons, dans le même ordre à chaques lignes (sauf pour les balises
 qui possèdent des identifiants avec @).
 
 
-1.2.1.Traitement de l'information
+\subsection{Traitement de l'information}
 
 Dans le cas générale les informations sont gérés de la façon suivante :
 
@@ -46,7 +62,7 @@ fermante et accompagné d'un traitement spécifique à l'élément dans le code.
 Dans le cas des identifiants gedcom l'ordre des informations est légèrement
 différentes. Et un traitement spécifique est fait.
 
-1.2.2.La fermeture des balises
+\subsection{La fermeture des balises}
 
 A chaque nouvelles lignes nous regardons si le niveau de la ligne est supérieur 
 au niveau de la ligne précédente. Autrement dit nous regardons le niveau de la
@@ -54,7 +70,7 @@ tête de pile. Si ce niveau est inférieur à notre niveau actuelle (chiffre plu
 faible), nous dépilons et créons les balises fermantes. Nous faisons cela 
 jusqu'à atteindre un niveau qui nous est supérieur.
 
-1.2.3.Partis pris dans le code
+\subsection{Partis pris dans le code}
 
 Nous ne nous sommes pas attaché à vérifier que le fichier gedcom était valide.
 Nous supposons à priorie les informations respectent la norme gedcom. Ce 
@@ -66,7 +82,7 @@ notre fichier gedcom.
 
 
 
-2.la dtd
+\chapter{la dtd}
 
 Afin de réaliser la DTD, nous avons dans un premier temps analysé chaque fichiers
 xml produit par notre parseur. Nous avons procédé de manière incrémentale jusqu'a
@@ -78,8 +94,7 @@ balise et à la fois une répétition multiple d'une autre balise et ce dans n'i
 quel ordre. Ce choix, à été fait afin de ne pas obtenir une dtd trop permissive.
 
 
-
-3.le shémas
+\chapter{le shémas}
 
 Pour les meme raison que la dtd, il nous avons décidé d'imposer un ordre au niveau de l'apparition
 des balises. Cependant, afin de permettre un ordre non defini, nous avions deux options
@@ -96,17 +111,17 @@ Par exemple, les elements contenant l'attribut ref faisant reference à un
 xsd:ID sont regroupés dans le type "referenceId"
 
 Le schéma nous a permis d'obtenir une meilleure précision concernant le 
-contenu simple de chaque élements là où nous n'avons que #PCDATA dans 
+contenu simple de chaque élements là où nous n'avons que \#PCDATA dans 
 une dtd. De plus, nous pouvons mieux définir les balises ayant un contenu mixte.
 En effet, contrairement à la dtd, nous pouvons limiter le nombre d'apparitions 
 de chaque elements. Dans la dtd, nous devions spécifier une répétition de choix 
-entre différents elements et du contenu #PCDATA. 
+entre différents elements et du contenu \#PCDATA. 
 
 
 
 
 
-4.le convertisseur xslt
+\chapter{le convertisseur xslt}
 
 Pour décrire ce que nous avons fait, nous allons passer d'un point vu à
 l'autre, entre le ficher xslt et le résultat visuel dans un navigateur web.
@@ -146,3 +161,12 @@ mother et brothers/sisters. Dans les fams on affiche husband, wife et childs.
 Les informations sur les prénoms sont récupérés via l'utilisations des indexes.
 Le troisième affichage est destiné aux balises <fam> qui sont afficher dans la
 partie famille du fichier.
+
+
+
+
+
+
+
+
+\end{document}
