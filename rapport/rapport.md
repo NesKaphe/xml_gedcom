@@ -67,15 +67,40 @@ notre fichier gedcom.
 
 
 2.la dtd
- TODO Alain
 
-
+Afin de réaliser la DTD, nous avons dans un premier temps analysé chaque fichiers
+xml produit par notre parseur. Nous avons procédé de manière incrémentale jusqu'a
+ce que chacun des fichiers soit valide.
+De plus, la norme gedcom n'impose aucun ordre au niveau des balises. Dans notre
+cas, nous imposons un ordre dans lequel les balises doivent apparaitre. En effet,
+sans cet ordre, il serait impossible de limiter à la fois l'apparition unique d'une
+balise et à la fois une répétition multiple d'une autre balise et ce dans n'importe
+quel ordre. Ce choix, à été fait afin de ne pas obtenir une dtd trop permissive.
 
 
 
 3.le shémas
- TODO Alain
 
+Pour les meme raison que la dtd, il nous avons décidé d'imposer un ordre au niveau de l'apparition
+des balises. Cependant, afin de permettre un ordre non defini, nous avions deux options
+"xsd:all" et "xsd:choice". Aucune de ces deux options ne nous ont permis d'obtenir le resultat
+souhaité. En effet, xsd:all ne nous permet l'apparition d'au plus qu'une 
+fois un element. Or, dans l'element indi, il doit etre possible d'avoir
+plusieurs "fams". Avec xsd:choice, nous perdons la limitation que l'element
+"name" ne doit apparaitre qu'une fois.
+
+Concernant la construction, nous avons remarqué que certain éléments étaient
+construits de manière similaire. Afin de ne pas dupliquer les definitions 
+similaires, nous avons définis plusieurs types complexes nommés.
+Par exemple, les elements contenant l'attribut ref faisant reference à un 
+xsd:ID sont regroupés dans le type "referenceId"
+
+Le schéma nous a permis d'obtenir une meilleure précision concernant le 
+contenu simple de chaque élements là où nous n'avons que #PCDATA dans 
+une dtd. De plus, nous pouvons mieux définir les balises ayant un contenu mixte.
+En effet, contrairement à la dtd, nous pouvons limiter le nombre d'apparitions 
+de chaque elements. Dans la dtd, nous devions spécifier une répétition de choix 
+entre différents elements et du contenu #PCDATA. 
 
 
 
