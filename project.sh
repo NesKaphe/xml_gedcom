@@ -43,11 +43,6 @@ then
     mkdir html #S'il n'existe pas, on le crée
 fi
 
-if [ ! -z "$(ls -A html 2>&1)" ]
-then
-    rm html/* #Si dossier non vide, on vide son contenu pour regénérer les fichiers html
-fi
-
 #On va regarder si le dossier bin existe pour la compilation du parseur
 if [ ! -d "bin" ]
 then

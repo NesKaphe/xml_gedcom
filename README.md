@@ -3,7 +3,7 @@ projet xml réalisé par Clément Charasson et Alain Dias
 1. prérequis
 	* installer java ; la JVM 1.6 ou plus
 	* installer scala
-	* installer sbt (optionnel)
+	* installer xsltproc et xmllint
 
 2. Script sh pour automatiser qui compile et génère tout les fichiers
 
@@ -17,35 +17,36 @@ fichiers xhtml à partir du fichier xsl.
   * Rendre le script projet.sh executable (e.g chmod u+x projet.sh)
 
   2.1.fichiers fournis
+
     * Le script s'arrete au premier fichier non valide, lance le parse s'il ne 
     trouve pas le fichier xml et genère le html produit par application de la
     feuille de style xslt
     * Lancer le script ./projet.sh pour travailler sur les fichiers fournis
+    * Note : Il est également possible d'executer make pour faire appel à cette option
 
   2.2.fichier choisi par l'utilisateur
+
     * Il est possible de donner un fichier gedcom en paramètre du script,
     le script va se charger de lancer le parse du fichier puis va lancer tous
     les tests de validité et produire le fichier xhtml dans le dossier html
     * Lancer le script ./projet.sh [chemin fichier.ged] pour travailler sur un
     fichier spécifique
 
+  2.3.Nettoyer les fichiers produits par le script sh
+
+    * Le Makefile nous permet de supprimer tous fichiers produit. Grace a clean,
+    nous tous fichiers html et xml produits sont supprimés. Avec mrproper, l'executable
+    du parseur est lui aussi supprimé.
+ 
 ===============================================================================
 
 Les explications qui vont suivrent sont utile dans le cas ou l'on veux tout
 tester 1 par 1:
 
 
-3. Comment passer un fichier spécifique 
-  3.1.solution 1
-    * se positionner dans le répertoire racine
-    * faire:             sbt
-    * dans sbt faire:    run [chemin fichier.ged]
+3. Comment parser un fichier spécifique 
 
-  3.2.solution 2
-    * se positionner dans le répoirtoire racine
-    * faire:     sbt "run-main parse [chemin fichier.ged]"
-
-  3.3.solution 3 (Se référer au 2.2)
+   3.1.(Se référer au 2.2)
 
 4. Comment compiler et parser sans sbt?
     * se positionner dans le répertoire racine
